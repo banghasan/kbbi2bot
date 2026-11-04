@@ -66,10 +66,11 @@ export function renderKBBI(result) {
     if (!definitions.length) continue;
     const head = `**${escapeMarkdown(entry.headword || entry.word)}**`;
     const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
-    lines.push(`${head}${grammar}`);
-    for (const definition of definitions) {
+    lines.push(`${head}${grammar}<br>`);
+    for (const [definitionIndex, definition] of definitions.entries()) {
       const prefix = definition.number == null ? '•' : `(${definition.number})`;
-      lines.push(`${prefix} ${definition.text}`);
+      const lineBreak = definition.number != null && definitionIndex < definitions.length - 1 ? '<br>' : '';
+      lines.push(`${prefix} ${definition.text}${lineBreak}`);
     }
     lines.push('');
   }

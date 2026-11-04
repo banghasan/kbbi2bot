@@ -38,6 +38,35 @@ test('keeps homonym entries separate and includes variations from each entry', (
   assert.match(markdown, /me·ngamus/);
 });
 
+test('puts visible numbered definitions on separate lines', () => {
+  const markdown = renderKBBI({
+    query: 'lupa',
+    entries: [{
+      word: 'lupa', headword: 'lu·pa', grammar: 'v',
+      definitions: [
+        { number: 1, text: 'lepas dari ingatan' },
+        { number: 2, text: 'tidak teringat' },
+      ],
+      sublemmas: [], derivedEntries: [],
+    }],
+    related: [],
+  });
+  assert.match(markdown, /\*\*lu·pa\*\* _v_<br>\n\(1\) lepas dari ingatan<br>\n\(2\) tidak teringat/);
+});
+
+test('puts the first definition on a new line for every main entry', () => {
+  const markdown = renderKBBI({
+    query: 'bisa',
+    entries: [{
+      word: 'bisa¹', headword: 'bi·sa¹', grammar: 'v',
+      definitions: [{ number: null, text: 'mampu melakukan sesuatu' }],
+      sublemmas: [], derivedEntries: [],
+    }],
+    related: [],
+  });
+  assert.match(markdown, /\*\*bi·sa¹\*\* _v_<br>\n• mampu melakukan sesuatu/);
+});
+
 test('help and stats avoid raw personal identifiers', () => {
   assert.match(renderHelp(), /@KBBI2bot rumah sakit/);
   assert.doesNotMatch(renderHelp(), /Source code:/);
