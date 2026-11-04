@@ -31,4 +31,6 @@ export const CUSTOM_EMOJI_IDS = Object.freeze({
   pin: '5359728403513620619',
   clock: '5857092222050111367',
   processing: '6113844439292054570',
+  notFound: '5212992409213872592',
+  support: '5911271585221710692',
 });

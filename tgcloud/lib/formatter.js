@@ -25,23 +25,19 @@ const EMOJI = {
   pin: customEmoji('📌', CUSTOM_EMOJI_IDS.pin),
   clock: customEmoji('⌚️', CUSTOM_EMOJI_IDS.clock),
   processing: customEmoji('⏳', CUSTOM_EMOJI_IDS.processing),
+  notFound: customEmoji('❌', CUSTOM_EMOJI_IDS.notFound),
 };
 
 export function sourceButton(query) {
-  return { type: 'url', text: `Buka ${buttonLabel(query)}`, emoji: '🔗', emojiId: CUSTOM_EMOJI_IDS.link, url: sourceUrlForQuery(query) };
-}
-
-function buttonLabel(query) {
-  const label = String(query).trim();
-  return label.length > 40 ? `${label.slice(0, 37)}…` : label;
+  return { type: 'url', text: 'Sumber', emoji: '🔗', emojiId: CUSTOM_EMOJI_IDS.link, url: sourceUrlForQuery(query) };
 }
 
 export function supportButton() {
-  return { type: 'url', text: 'Support Telegram Bot Indonesia', emoji: '🤝', url: SUPPORT_URL };
+  return { type: 'url', text: 'Support Telegram Bot Indonesia', emoji: '🤝', emojiId: CUSTOM_EMOJI_IDS.support, url: SUPPORT_URL };
 }
 
 export function sourceCodeButton() {
-  return { type: 'url', text: 'Lihat source code', emoji: '🔗', emojiId: CUSTOM_EMOJI_IDS.link, url: SOURCE_CODE_URL };
+  return { type: 'url', text: 'Source code', emoji: '🔗', emojiId: CUSTOM_EMOJI_IDS.link, url: SOURCE_CODE_URL };
 }
 
 export function renderKBBI(result) {
@@ -65,7 +61,7 @@ export function renderKBBI(result) {
   const sublemmas = firstEntry?.sublemmas ?? [];
   const derivedEntries = firstEntry?.derivedEntries ?? [];
   if (sublemmas.length || derivedEntries.length || result.related.length) {
-    lines.push(`<details><summary>${EMOJI.pin} Contoh, variasi, dan kata turunan</summary>`);
+    lines.push(`<details><summary>${EMOJI.pin} Variasi</summary>`);
     for (const entry of sublemmas) {
       const head = `**${escapeMarkdown(entry.headword)}**`;
       const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
@@ -91,7 +87,6 @@ export function renderKBBI(result) {
     lines.push('</details>', '');
   }
 
-  lines.push(`${EMOJI.link} Sumber: [KBBI Online](${sourceUrlForQuery(result.query)})`);
   return truncateText(lines.join('\n'), MAX_RICH_MESSAGE_LENGTH);
 }
 
@@ -102,10 +97,14 @@ export function renderStart() {
     '',
     'Cari arti kata atau frasa Bahasa Indonesia langsung dari Telegram.',
     '',
-    '**Contoh:**<br>',
+    '**Contoh:**<br><br>',
     `${EMOJI.arrow} \`/kbbi kucing\`<br>`,
     `${EMOJI.arrow} \`/kbbi rumah sakit\``,
-    '',
+    '<br>',
+    '**Mode guest:**<br><br>',
+    'Gunakan mention bot langsung di chat atau grup:<br><br>',
+    `${EMOJI.arrow} \`@KBBI2bot rumah sakit\``,
+    '<br>',
     `> ${EMOJI.info} Bot ini menggunakan KBBI Online dan bukan layanan resmi Badan Bahasa.`,
   ].join('\n');
 }
@@ -114,17 +113,16 @@ export function renderHelp() {
   return [
     `# ${EMOJI.help} Bantuan KBBI`,
     '',
-    '**Private chat:**<br>',
+    '**Private chat:**<br><br>',
     `${EMOJI.arrow} \`/kbbi rumah sakit\`<br>`,
     `${EMOJI.arrow} \`/ping\`<br>`,
     `${EMOJI.arrow} \`/stats\``,
-    '',
-    '**Group atau guest mode:**<br>',
+    '<br>',
+    '**Group atau guest mode:**<br><br>',
     `${EMOJI.arrow} \`@KBBI2bot rumah sakit\`<br>`,
     `${EMOJI.arrow} \`/kbbi@KBBI2bot rumah sakit\``,
-    '',
+    '<br>',
     'Pencarian dibatasi maksimal 3 kata dan 100 karakter.',
-    `${EMOJI.link} Source code: [GitHub](${SOURCE_CODE_URL})`,
   ].join('\n');
 }
 
@@ -133,7 +131,7 @@ export function renderPing(durationMs) {
 }
 
 export function renderNotFound() {
-  return '🔎 **Kata atau frasa tidak ditemukan.**';
+  return `${EMOJI.notFound} **Kata atau frasa tidak ditemukan.**`;
 }
 
 export function renderInvalidInput() {
@@ -163,7 +161,11 @@ export function formatResponseTime(durationMs) {
 }
 
 export function appendResponseTime(markdown, durationMs) {
-  return `${markdown}\n\n${EMOJI.clock} Waktu respons: **${formatResponseTime(durationMs)}**`;
+  return `${markdown}\n\n${responseTimeFooter(durationMs)}`;
+}
+
+export function responseTimeFooter(durationMs) {
+  return `${EMOJI.clock} Waktu respons: **${formatResponseTime(durationMs)}**`;
 }
 
 export function renderPrivateOnly() {
@@ -212,16 +214,17 @@ function richButton(button) {
   const emoji = button.emojiId
     ? `<tg-emoji emoji-id="${escapeRichHtml(button.emojiId)}">${escapeRichHtml(button.emoji ?? '')}</tg-emoji> `
     : escapeRichHtml(button.emoji ? `${button.emoji} ` : '');
-  const style = button.style ? ` style="${escapeRichHtml(button.style)}"` : ' style="primary"';
+  const style = button.style ? ` style="${escapeRichHtml(button.style)}"` : '';
   return `<tg-button type="url"${style} url="${escapeRichHtml(button.url)}">${emoji}${escapeRichHtml(button.text)}</tg-button>`;
 }
 
-export function richMessage(markdown, buttons = []) {
+export function richMessage(markdown, buttons = [], footer = '') {
   const list = (Array.isArray(buttons) ? buttons : [buttons]).filter(Boolean);
   const buttonMarkup = list.length
-    ? `\n\n<tg-button-row>${list.map(richButton).join('')}</tg-button-row>`
+    ? `\n\n<tg-button-row align="left">${list.map(richButton).join('')}</tg-button-row>`
     : '';
-  return { markdown: `${markdown}${buttonMarkup}`, skip_entity_detection: true };
+  const footerMarkup = footer ? `\n\n${footer}` : '';
+  return { markdown: `${markdown}${buttonMarkup}${footerMarkup}`, skip_entity_detection: true };
 }
 
 export function buttonForStart() {
@@ -229,7 +232,7 @@ export function buttonForStart() {
 }
 
 export function buttonForHelp() {
-  return sourceCodeButton();
+  return [supportButton(), sourceCodeButton()];
 }
 
 export const SOURCE_LABEL = SOURCE_BASE_URL;

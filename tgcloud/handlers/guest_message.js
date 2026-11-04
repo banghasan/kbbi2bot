@@ -11,7 +11,7 @@ export default async function guestMessageHandler(message) {
     await safeIncrement(METRIC_KEYS.requests);
     await safeIncrement(METRIC_KEYS.guestQueries);
     const argument = parseGuestInput(message);
-    const send = (markdown, replyMarkup) => answerGuestRich(message, markdown, replyMarkup);
+    const send = (markdown, replyMarkup, footer) => answerGuestRich(message, markdown, replyMarkup, footer);
     if (!validateSearch(argument).ok) {
       await send(renderInvalidInput());
       return;
@@ -22,7 +22,7 @@ export default async function guestMessageHandler(message) {
       answerSearch,
       sendInitial: send,
       sendFallback: send,
-      edit: (sent, markdown, replyMarkup) => editGuestRich(sent, markdown, replyMarkup),
+      edit: (sent, markdown, replyMarkup, footer) => editGuestRich(sent, markdown, replyMarkup, footer),
     });
   } finally {
     await safeRecordLatency(startedAt);

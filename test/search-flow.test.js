@@ -13,13 +13,14 @@ test('edits the processing message into the final rich result', async () => {
       return { message_id: 99 };
     },
     sendFallback: async () => calls.push(['fallback']),
-    edit: async (sent, markdown, button) => calls.push(['edit', sent, markdown, button]),
+    edit: async (sent, markdown, button, footer) => calls.push(['edit', sent, markdown, button, footer]),
   });
 
   assert.equal(calls[0][0], 'initial');
   assert.equal(calls[1][0], 'edit');
   assert.equal(calls[1][1].message_id, 99);
   assert.match(calls[1][2], /Hasil/);
-  assert.match(calls[1][2], /Waktu respons/);
+  assert.doesNotMatch(calls[1][2], /Waktu respons/);
+  assert.match(calls[1][4], /Waktu respons/);
   assert.equal(calls[2], undefined);
 });

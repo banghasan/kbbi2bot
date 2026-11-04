@@ -13,7 +13,7 @@ export default async function messageHandler(message) {
     if (!parsed) return;
     await safeIncrement(METRIC_KEYS.requests);
 
-    const send = (markdown, replyMarkup) => sendRichToChat(message, markdown, replyMarkup);
+    const send = (markdown, replyMarkup, footer) => sendRichToChat(message, markdown, replyMarkup, footer);
     if (parsed.kind === 'guest-like') {
       await answerSearchWithProgress({
         message,
@@ -21,7 +21,7 @@ export default async function messageHandler(message) {
         answerSearch,
         sendInitial: send,
         sendFallback: send,
-        edit: (sent, markdown, replyMarkup) => editRichToChat(message, sent, markdown, replyMarkup),
+        edit: (sent, markdown, replyMarkup, footer) => editRichToChat(message, sent, markdown, replyMarkup, footer),
       });
       return;
     }
@@ -58,7 +58,7 @@ export default async function messageHandler(message) {
           answerSearch,
           sendInitial: send,
           sendFallback: send,
-          edit: (sent, markdown, replyMarkup) => editRichToChat(message, sent, markdown, replyMarkup),
+          edit: (sent, markdown, replyMarkup, footer) => editRichToChat(message, sent, markdown, replyMarkup, footer),
         });
         break;
       default:
