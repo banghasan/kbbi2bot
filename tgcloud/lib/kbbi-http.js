@@ -51,7 +51,7 @@ function isRetryable(error) {
   return !isNotFoundError(error) && (!error?.status || error.status >= 500);
 }
 
-export async function fetchKBBI(query, options = {}) {
+async function fetchPayload(query, options = {}) {
   const {
     fetchImpl,
     random = Math.random,
@@ -66,15 +66,7 @@ export async function fetchKBBI(query, options = {}) {
     try {
       const payload = await requestJson(url, fetchImpl, timeoutMs);
       if (isNotFoundPayload(payload)) throw new KBBINotFoundError();
-      let parsed;
-      try {
-        parsed = parseKBBIResponse(payload, query);
-      } catch (error) {
-        error.kind = 'parse';
-        throw error;
-      }
-      if (!parsed) throw new KBBINotFoundError();
-      return parsed;
+      return payload;
     } catch (error) {
       if (error instanceof KBBINotFoundError) throw error;
       if (isNotFoundError(error)) throw new KBBINotFoundError();
@@ -86,4 +78,21 @@ export async function fetchKBBI(query, options = {}) {
   }
 
   throw new KBBIUnavailableError('KBBI source is unavailable', lastError);
+}
+
+export async function fetchKBBIRaw(query, options = {}) {
+  return fetchPayload(query, options);
+}
+
+export async function fetchKBBI(query, options = {}) {
+  const payload = await fetchPayload(query, options);
+  let parsed;
+  try {
+    parsed = parseKBBIResponse(payload, query);
+  } catch (error) {
+    error.kind = 'parse';
+    throw error;
+  }
+  if (!parsed) throw new KBBINotFoundError();
+  return parsed;
 }

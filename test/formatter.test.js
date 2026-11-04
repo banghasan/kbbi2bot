@@ -17,6 +17,10 @@ test('renders a readable KBBI rich message with details and source', () => {
   assert.match(markdown, /\(1\) binatang \*\*kecil\*\*/);
   assert.match(markdown, /<details>/);
   assert.match(markdown, /Variasi/);
+  assert.match(markdown, /Terkait/);
+  assert.match(markdown, /tg:\/\/emoji\?id=6064273567439132467/);
+  assert.match(markdown, /kumis kucing/);
+  assert.doesNotMatch(markdown, /- kumis kucing/);
   assert.match(markdown, /tg:\/\/emoji\?id=5359728403513620619/);
   assert.match(markdown, /anggora/);
   assert.match(markdown, /tg:\/\/emoji\?id=5357479219335012900/);

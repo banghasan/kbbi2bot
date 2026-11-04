@@ -1,5 +1,6 @@
 import { readCache, writeCache } from './cache.js';
-import { fetchKBBI, KBBINotFoundError } from './kbbi-fetch.js';
+import { fetchKBBIRaw, KBBINotFoundError } from './kbbi-fetch.js';
+import { parseKBBIResponse } from './kbbi-parser.js';
 import { incrementMetric, METRIC_KEYS } from './metrics.js';
 import { withFetchSlot } from './limits.js';
 
@@ -28,8 +29,19 @@ async function safeMetric(metricKey) {
   }
 }
 
+function parseCachedPayload(payload, query) {
+  if (!Array.isArray(payload)) return null;
+  try {
+    return parseKBBIResponse(payload, query);
+  } catch (error) {
+    console.warn('cached KBBI payload parse failed', error?.message);
+    return null;
+  }
+}
+
 export async function lookupKBBI(query) {
-  const cached = await safeReadCache(query);
+  const cachedPayload = await safeReadCache(query);
+  const cached = parseCachedPayload(cachedPayload, query);
   if (cached) {
     await safeMetric(METRIC_KEYS.cacheHits);
     return { result: cached, cached: true };
@@ -37,15 +49,24 @@ export async function lookupKBBI(query) {
 
   await safeMetric(METRIC_KEYS.cacheMisses);
   return withFetchSlot(query, async () => {
-    const afterWait = await safeReadCache(query);
+    const afterWaitPayload = await safeReadCache(query);
+    const afterWait = parseCachedPayload(afterWaitPayload, query);
     if (afterWait) {
       await safeMetric(METRIC_KEYS.cacheHits);
       return { result: afterWait, cached: true };
     }
 
     try {
-      const result = await fetchKBBI(query);
-      await safeWriteCache(query, result);
+      const payload = await fetchKBBIRaw(query);
+      let result;
+      try {
+        result = parseKBBIResponse(payload, query);
+      } catch (error) {
+        error.kind = 'parse';
+        throw error;
+      }
+      if (!result) throw new KBBINotFoundError();
+      await safeWriteCache(query, payload);
       await safeMetric(METRIC_KEYS.fetchSuccess);
       return { result, cached: false };
     } catch (error) {

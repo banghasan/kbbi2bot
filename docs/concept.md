@@ -173,7 +173,7 @@ Detail parser boleh menyesuaikan markup sumber selama struktur dan keterbacaan t
 - Cache hanya respons KBBI yang berhasil diparse.
 - Kunci cache berdasarkan input yang sudah dinormalisasi.
 - TTL cache: 24 jam.
-- Cache menyimpan data terstruktur atau hasil ter-normalisasi, bukan kredensial.
+- Cache menyimpan payload JSON mentah dari endpoint KBBI, bukan hasil parser; payload diolah ulang setiap kali dibaca agar perubahan parser langsung berlaku.
 - Error jaringan dan hasil kosong tidak disimpan sebagai hasil sukses.
 
 ## Error dan fallback

@@ -24,6 +24,7 @@ const EMOJI = {
   arrow: customEmoji('➡️', CUSTOM_EMOJI_IDS.arrow),
   stats: customEmoji('📊', CUSTOM_EMOJI_IDS.stats),
   link: customEmoji('🔗', CUSTOM_EMOJI_IDS.link),
+  related: customEmoji('↗️', CUSTOM_EMOJI_IDS.related),
   pin: customEmoji('📌', CUSTOM_EMOJI_IDS.pin),
   clock: customEmoji('⌚️', CUSTOM_EMOJI_IDS.clock),
   processing: customEmoji('⏳', CUSTOM_EMOJI_IDS.processing),
@@ -84,7 +85,7 @@ export function renderKBBI(result) {
     derivedRemaining -= derivedEntries.length;
     return { entry, sublemmas, derivedEntries };
   });
-  if (variationEntries.some((item) => item.sublemmas.length || item.derivedEntries.length) || result.related.length) {
+  if (variationEntries.some((item) => item.sublemmas.length || item.derivedEntries.length)) {
     lines.push(`<details><summary>${EMOJI.pin} Variasi</summary>`);
     const multipleEntries = result.entries.length > 1;
     for (const item of variationEntries) {
@@ -101,10 +102,12 @@ export function renderKBBI(result) {
       }
       lines.push('');
     }
-    if (result.related.length) {
-      lines.push('', '**Hasil terkait:**');
-      for (const word of result.related) lines.push(`- ${escapeMarkdown(word)}`);
-    }
+    lines.push('</details>', '');
+  }
+
+  if (result.related.length) {
+    lines.push(`<details><summary>${EMOJI.related} Terkait</summary>`);
+    lines.push(result.related.map((word) => escapeMarkdown(word)).join(' · '));
     lines.push('</details>', '');
   }
 

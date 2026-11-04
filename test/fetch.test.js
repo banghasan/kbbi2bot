@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fetchKBBI, KBBINotFoundError, KBBIUnavailableError } from '../tgcloud/lib/kbbi-http.js';
+import { fetchKBBI, fetchKBBIRaw, KBBINotFoundError, KBBIUnavailableError } from '../tgcloud/lib/kbbi-http.js';
 
 function response(payload, status = 200) {
   return { ok: status >= 200 && status < 300, status, json: async () => payload };
@@ -53,4 +53,10 @@ test('classifies repeated upstream failures as unavailable', async () => {
     fetchKBBI('kucing', { retryDelayMs: 0, fetchImpl: async () => response({}, 503) }),
     KBBIUnavailableError,
   );
+});
+
+test('can fetch the raw JSON payload for parser-independent caching', async () => {
+  const payload = [{ x: 1, w: 'kucing', d: '<b>ku&#183;cing</b> <em>n</em> binatang' }];
+  const result = await fetchKBBIRaw('kucing', { fetchImpl: async () => response(payload) });
+  assert.deepEqual(result, payload);
 });

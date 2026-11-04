@@ -13,7 +13,7 @@ export const MAX_DERIVED_ENTRIES = 5;
 export const MAX_RELATED_WORDS = 10;
 export const MAX_RICH_MESSAGE_LENGTH = 30_000;
 export const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-export const CACHE_KEY_VERSION = 'v3';
+export const CACHE_KEY_VERSION = 'v4';
 export const RATE_LIMIT_MAX = 10;
 export const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 export const MAX_FETCH_CONCURRENCY = 3;
@@ -28,6 +28,7 @@ export const CUSTOM_EMOJI_IDS = Object.freeze({
   arrow: '5215194898508031379',
   stats: '5364265190353286344',
   link: '5289941455605876181',
+  related: '6064273567439132467',
   pin: '5359728403513620619',
   clock: '5857092222050111367',
   processing: '6113844439292054570',
