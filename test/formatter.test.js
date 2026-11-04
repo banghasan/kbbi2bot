@@ -23,6 +23,7 @@ test('renders a readable KBBI rich message with details and source', () => {
   assert.doesNotMatch(markdown, /- kumis kucing/);
   assert.match(markdown, /tg:\/\/emoji\?id=5359728403513620619/);
   assert.match(markdown, /anggora/);
+  assert.match(markdown, /==\\-\\- anggora==/);
   assert.match(markdown, /tg:\/\/emoji\?id=5357479219335012900/);
   assert.doesNotMatch(markdown, /Sumber: \[KBBI Online\]/);
   assert.equal(sourceButton('rumah sakit').url, 'https://kbbi.web.id/rumah%20sakit');
@@ -55,7 +56,7 @@ test('puts visible numbered definitions on separate lines', () => {
     }],
     related: [],
   });
-  assert.match(markdown, /> \*\*lu·pa\*\* _v_\n\n\(1\) lepas dari ingatan<br>\n\(2\) tidak teringat/);
+  assert.match(markdown, /==lu·pa== _v_\n\n\(1\) lepas dari ingatan<br>\n\(2\) tidak teringat/);
 });
 
 test('puts the first definition on a new line for every main entry', () => {
@@ -68,7 +69,7 @@ test('puts the first definition on a new line for every main entry', () => {
     }],
     related: [],
   });
-  assert.match(markdown, /> \*\*bi·sa¹\*\* _v_\n\n• mampu melakukan sesuatu/);
+  assert.match(markdown, /==bi·sa¹== _v_\n\n• mampu melakukan sesuatu/);
 });
 
 test('renders main definition examples as quoted lines without changing variations', () => {
@@ -83,7 +84,7 @@ test('renders main definition examples as quoted lines without changing variatio
     related: [],
   });
   assert.match(markdown, /• mampu melakukan sesuatu; dapat:<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) ia \\-\\- membaca, tetapi tidak \\-\\- menulis<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) alah \\-\\- oleh/);
-  assert.match(markdown, /\*\*\\-\\- ber bisa\*\*\n• contoh variasi/);
+  assert.match(markdown, /==\\-\\- ber bisa==\n• contoh variasi/);
 });
 
 test('closes a main definition quote before the next numbered definition', () => {
@@ -100,7 +101,7 @@ test('closes a main definition quote before the next numbered definition', () =>
     }],
     related: [],
   });
-  assert.match(markdown, /> \*\*ra·sa¹\*\* _n_\n\n\(1\) tanggapan indra<br>\n\(2\) apa yang dialami oleh badan:<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) \\-\\- pedih dan nyeri di perut;<br>\n\(3\) sifat rasa suatu benda/);
+  assert.match(markdown, /==ra·sa¹== _n_\n\n\(1\) tanggapan indra<br>\n\(2\) apa yang dialami oleh badan:<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) \\-\\- pedih dan nyeri di perut;<br>\n\(3\) sifat rasa suatu benda/);
 });
 
 test('puts embedded numbered definitions on separate quoted lines', () => {
@@ -113,7 +114,7 @@ test('puts embedded numbered definitions on separate quoted lines', () => {
     }],
     related: [],
   });
-  assert.match(markdown, /> \*\*bi·sa²\*\* _n_\n\n\(1\) zat racun;<br>\n/);
+  assert.match(markdown, /==bi·sa²== _n_\n\n\(1\) zat racun;<br>\n/);
   assert.ok(markdown.includes('\n\\(2\\) ki sesuatu yang buruk'));
 });
 

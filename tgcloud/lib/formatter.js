@@ -17,6 +17,10 @@ function customEmoji(emoji, id) {
   return `![${emoji}](tg://emoji?id=${id})`;
 }
 
+function markedText(value) {
+  return `==${escapeMarkdown(value).replaceAll('\\=', '=')}==`;
+}
+
 const EMOJI = {
   book: customEmoji('📚', CUSTOM_EMOJI_IDS.book),
   info: customEmoji('ℹ️', CUSTOM_EMOJI_IDS.info),
@@ -102,7 +106,7 @@ export function renderKBBI(result) {
     if (!definitions.length) continue;
     const head = `**${escapeMarkdown(entry.headword || entry.word)}**`;
     const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
-    lines.push(`> ${head}${grammar}`, '');
+    lines.push(`${markedText(entry.headword || entry.word)}${grammar}`, '');
     for (const [definitionIndex, definition] of definitions.entries()) {
       const prefix = definition.number == null ? '•' : `(${definition.number})`;
       const rendered = renderMainDefinition(prefix, definition.text);
@@ -126,9 +130,9 @@ export function renderKBBI(result) {
     const multipleEntries = result.entries.length > 1;
     for (const item of variationEntries) {
       if (!item.sublemmas.length && !item.derivedEntries.length) continue;
-      if (multipleEntries) lines.push(`**${escapeMarkdown(item.entry.headword || item.entry.word)}**`);
+      if (multipleEntries) lines.push(markedText(item.entry.headword || item.entry.word));
       for (const entry of [...item.sublemmas, ...item.derivedEntries]) {
-        const head = `**${escapeMarkdown(entry.headword)}**`;
+        const head = markedText(entry.headword);
         const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
         lines.push(`${head}${grammar}`);
         for (const definition of entry.definitions) {
