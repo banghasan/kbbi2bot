@@ -43,3 +43,11 @@ test('returns null for empty or unusable payloads', () => {
   assert.equal(parseKBBIResponse([], 'x'), null);
   assert.equal(parseKBBIResponse([{ x: 1, w: 'x', d: '' }], 'x'), null);
 });
+
+test('splits numbered definitions embedded in one KBBI definition', () => {
+  const parsed = parseKBBIResponse([
+    { x: 1, w: 'bisa', d: '<b>bi&#183;sa</b> <em>n</em> <b>1</b> zat racun; (2) <em>ki</em> sesuatu yang buruk' },
+  ], 'bisa');
+  assert.deepEqual(parsed.entries[0].definitions.map((definition) => definition.number), [1, 2]);
+  assert.match(parsed.entries[0].definitions[1].text, /sesuatu yang buruk/);
+});

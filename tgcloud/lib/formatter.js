@@ -25,6 +25,7 @@ const EMOJI = {
   stats: customEmoji('📊', CUSTOM_EMOJI_IDS.stats),
   link: customEmoji('🔗', CUSTOM_EMOJI_IDS.link),
   related: customEmoji('↗️', CUSTOM_EMOJI_IDS.related),
+  sample: customEmoji('🔵', CUSTOM_EMOJI_IDS.sample),
   pin: customEmoji('📌', CUSTOM_EMOJI_IDS.pin),
   clock: customEmoji('⌚️', CUSTOM_EMOJI_IDS.clock),
   processing: customEmoji('⏳', CUSTOM_EMOJI_IDS.processing),
@@ -41,6 +42,40 @@ export function supportButton() {
 
 export function sourceCodeButton() {
   return { type: 'url', text: 'Source code', emoji: '🔗', emojiId: CUSTOM_EMOJI_IDS.link, url: SOURCE_CODE_URL };
+}
+
+// Keep numbered definitions and examples visually independent in rich messages.
+function renderMainDefinition(prefix, text) {
+  const value = String(text).replace(
+    /\s+[*_]*(\\?\(\\?\d+\\?\))[*_]*\s+/g,
+    '<br>\n$1 ',
+  );
+  const marker = /\\-\\-/;
+  const colonExample = value.match(/^(.*?:)\s+([^;]*\\-\\-[^;]*)(.*)$/);
+  let lead = value;
+  let exampleText = '';
+
+  if (colonExample) {
+    lead = colonExample[1];
+    exampleText = `${colonExample[2]}${colonExample[3]}`;
+  } else if (marker.test(value)) {
+    const boundary = value.search(/;\s*(?=\\-\\-)/);
+    if (boundary >= 0) {
+      lead = value.slice(0, boundary + 1);
+      exampleText = value.slice(boundary + 1).trim();
+    }
+  }
+
+  if (!exampleText) return `${prefix} ${value}`;
+
+  const examples = exampleText
+    .split(/;\s*(?=[^;]*\\-\\-)/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return [
+    `${prefix} ${lead}`,
+    ...examples.map((example) => `${EMOJI.sample} ${example}`),
+  ].join('<br>\n');
 }
 
 export function renderKBBI(result) {
@@ -67,11 +102,12 @@ export function renderKBBI(result) {
     if (!definitions.length) continue;
     const head = `**${escapeMarkdown(entry.headword || entry.word)}**`;
     const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
-    lines.push(`${head}${grammar}<br>`);
+    lines.push(`> ${head}${grammar}`, '');
     for (const [definitionIndex, definition] of definitions.entries()) {
       const prefix = definition.number == null ? '•' : `(${definition.number})`;
-      const lineBreak = definition.number != null && definitionIndex < definitions.length - 1 ? '<br>' : '';
-      lines.push(`${prefix} ${definition.text}${lineBreak}`);
+      const rendered = renderMainDefinition(prefix, definition.text);
+      const lineBreak = definitionIndex < definitions.length - 1 ? '<br>' : '';
+      lines.push(`${rendered}${lineBreak}`);
     }
     lines.push('');
   }
@@ -147,6 +183,21 @@ export function renderHelp() {
     `${EMOJI.arrow} \`/kbbi@KBBI2bot rumah sakit\``,
     '<br>',
     'Pencarian dibatasi maksimal 3 kata dan 100 karakter.',
+    '',
+    `<details><summary>${EMOJI.info} Keterangan singkatan</summary>`,
+    '**Bentuk kata:**<br>',
+    '`a` — adjektiva / kata sifat<br>',
+    '`n` — nomina / kata benda<br>',
+    '`v` — verba / kata kerja<br>',
+    '`adv` — adverbia / kata keterangan<br>',
+    '`pron` — pronomina / kata ganti<br>',
+    '`num` — numeralia / kata bilangan<br><br>',
+    '**Label umum:**<br>',
+    '`ki` — kiasan<br>',
+    '`pb` — peribahasa<br>',
+    '`cak` — cakapan<br>',
+    '`ark` — arkais',
+    '</details>',
   ].join('\n');
 }
 

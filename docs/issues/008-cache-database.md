@@ -9,7 +9,7 @@ Mengurangi request berulang ke KBBI dengan cache SQLite bawaan Telegram Serverle
 
 ## Desain
 
-- Cache key: `v4:<input-yang-telah-dinormalisasi>`.
+- Cache key: `v6:<input-yang-telah-dinormalisasi>`.
 - TTL: 24 jam.
 - Isi: payload JSON mentah dari endpoint KBBI, bukan hasil parser atau rich message.
 - Payload JSON diparse ulang setiap kali dibaca dari cache agar perubahan parser langsung berlaku.
@@ -38,6 +38,8 @@ format rich message terbaru
 ```
 
 Perubahan struktur cache yang tidak kompatibel menggunakan kenaikan `CACHE_KEY_VERSION`. Cache versi lama tidak dihapus secara langsung, tetapi tidak lagi dibaca dan akan kedaluwarsa secara alami.
+
+> Versi cache dinaikkan dari `v4` ke `v6` untuk memaksa pengambilan ulang payload KBBI selama verifikasi format definisi utama. Data cache lama tetap tersimpan dan tidak digunakan oleh versi aktif.
 
 ## Alur request
 

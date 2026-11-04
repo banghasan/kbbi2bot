@@ -81,7 +81,27 @@ function parseDefinitionSegment(segment, fallbackWord) {
     if (text) definitions.push({ number: null, text });
   }
 
-  return { headword, grammar, definitions };
+  const expandedDefinitions = [];
+  for (const definition of definitions) {
+    const markers = [...definition.text.matchAll(/;\s*[*_]*(\\?\(\\?(\d+)\\?\))[*_]*\s+/g)];
+    if (!markers.length) {
+      expandedDefinitions.push(definition);
+      continue;
+    }
+
+    let start = 0;
+    let number = definition.number;
+    for (const marker of markers) {
+      const before = definition.text.slice(start, marker.index + 1).trim();
+      if (before) expandedDefinitions.push({ number, text: before });
+      start = marker.index + marker[0].length;
+      number = Number(marker[2]);
+    }
+    const remainder = definition.text.slice(start).trim();
+    if (remainder) expandedDefinitions.push({ number, text: remainder });
+  }
+
+  return { headword, grammar, definitions: expandedDefinitions.slice(0, MAX_DEFINITIONS) };
 }
 
 function entrySegments(html) {

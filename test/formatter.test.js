@@ -55,7 +55,7 @@ test('puts visible numbered definitions on separate lines', () => {
     }],
     related: [],
   });
-  assert.match(markdown, /\*\*lu·pa\*\* _v_<br>\n\(1\) lepas dari ingatan<br>\n\(2\) tidak teringat/);
+  assert.match(markdown, /> \*\*lu·pa\*\* _v_\n\n\(1\) lepas dari ingatan<br>\n\(2\) tidak teringat/);
 });
 
 test('puts the first definition on a new line for every main entry', () => {
@@ -68,11 +68,86 @@ test('puts the first definition on a new line for every main entry', () => {
     }],
     related: [],
   });
-  assert.match(markdown, /\*\*bi·sa¹\*\* _v_<br>\n• mampu melakukan sesuatu/);
+  assert.match(markdown, /> \*\*bi·sa¹\*\* _v_\n\n• mampu melakukan sesuatu/);
+});
+
+test('renders main definition examples as quoted lines without changing variations', () => {
+  const markdown = renderKBBI({
+    query: 'bisa',
+    entries: [{
+      word: 'bisa¹', headword: 'bi·sa¹', grammar: 'v',
+      definitions: [{ number: null, text: 'mampu melakukan sesuatu; dapat: ia \\-\\- membaca, tetapi tidak \\-\\- menulis; alah \\-\\- oleh (karena) biasa' }],
+      sublemmas: [{ headword: '-- ber bisa', grammar: '', definitions: [{ number: null, text: 'contoh variasi' }] }],
+      derivedEntries: [],
+    }],
+    related: [],
+  });
+  assert.match(markdown, /• mampu melakukan sesuatu; dapat:<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) ia \\-\\- membaca, tetapi tidak \\-\\- menulis<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) alah \\-\\- oleh/);
+  assert.match(markdown, /\*\*\\-\\- ber bisa\*\*\n• contoh variasi/);
+});
+
+test('closes a main definition quote before the next numbered definition', () => {
+  const markdown = renderKBBI({
+    query: 'rasa',
+    entries: [{
+      word: 'rasa', headword: 'ra·sa¹', grammar: 'n',
+      definitions: [
+        { number: 1, text: 'tanggapan indra' },
+        { number: 2, text: 'apa yang dialami oleh badan: \\-\\- pedih dan nyeri di perut;' },
+        { number: 3, text: 'sifat rasa suatu benda' },
+      ],
+      sublemmas: [], derivedEntries: [],
+    }],
+    related: [],
+  });
+  assert.match(markdown, /> \*\*ra·sa¹\*\* _n_\n\n\(1\) tanggapan indra<br>\n\(2\) apa yang dialami oleh badan:<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) \\-\\- pedih dan nyeri di perut;<br>\n\(3\) sifat rasa suatu benda/);
+});
+
+test('puts embedded numbered definitions on separate quoted lines', () => {
+  const markdown = renderKBBI({
+    query: 'bisa',
+    entries: [{
+      word: 'bisa²', headword: 'bi·sa²', grammar: 'n',
+      definitions: [{ number: 1, text: 'zat racun; \\(2\\) ki sesuatu yang buruk' }],
+      sublemmas: [], derivedEntries: [],
+    }],
+    related: [],
+  });
+  assert.match(markdown, /> \*\*bi·sa²\*\* _n_\n\n\(1\) zat racun;<br>\n/);
+  assert.ok(markdown.includes('\n\\(2\\) ki sesuatu yang buruk'));
+});
+
+test('splits numbered definitions when the number is bold-marked', () => {
+  const markdown = renderKBBI({
+    query: 'bisa',
+    entries: [{
+      word: 'bisa²', headword: 'bi·sa²', grammar: 'n',
+      definitions: [{ number: 1, text: 'zat racun; **\\(2\\)** ki sesuatu yang buruk' }],
+      sublemmas: [], derivedEntries: [],
+    }],
+    related: [],
+  });
+  assert.ok(markdown.includes('\n\\(2\\) ki sesuatu yang buruk'));
+});
+
+test('splits adjacent examples when KBBI omits the space after semicolon', () => {
+  const markdown = renderKBBI({
+    query: 'bisa',
+    entries: [{
+      word: 'bisa¹', headword: 'bi·sa¹', grammar: 'v',
+      definitions: [{ number: null, text: 'mampu; dapat: *ia \\-\\- membaca;alah \\-\\- oleh, pb* sesuatu' }],
+      sublemmas: [], derivedEntries: [],
+    }],
+    related: [],
+  });
+  assert.match(markdown, /!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) \*ia \\-\\- membaca<br>\n!\[🔵\]\(tg:\/\/emoji\?id=5357094458984769398\) alah \\-\\- oleh/);
 });
 
 test('help and stats avoid raw personal identifiers', () => {
   assert.match(renderHelp(), /@KBBI2bot rumah sakit/);
+  assert.match(renderHelp(), /Keterangan singkatan/);
+  assert.match(renderHelp(), /`a` — adjektiva \/ kata sifat/);
+  assert.match(renderHelp(), /`pb` — peribahasa/);
   assert.doesNotMatch(renderHelp(), /Source code:/);
   assert.match(renderStats({
     requests: 1, cacheHits: 2, cacheMisses: 3, fetchSuccess: 4, notFound: 5,
