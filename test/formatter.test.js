@@ -14,7 +14,7 @@ test('renders a readable KBBI rich message with details and source', () => {
     related: ['kumis kucing'],
   });
   assert.match(markdown, /kucing/m);
-  assert.match(markdown, /\*\*1\*\* binatang \*\*kecil\*\*/);
+  assert.match(markdown, /\(1\) binatang \*\*kecil\*\*/);
   assert.match(markdown, /<details>/);
   assert.match(markdown, /Variasi/);
   assert.match(markdown, /tg:\/\/emoji\?id=5359728403513620619/);
@@ -22,6 +22,20 @@ test('renders a readable KBBI rich message with details and source', () => {
   assert.match(markdown, /tg:\/\/emoji\?id=5357479219335012900/);
   assert.doesNotMatch(markdown, /Sumber: \[KBBI Online\]/);
   assert.equal(sourceButton('rumah sakit').url, 'https://kbbi.web.id/rumah%20sakit');
+});
+
+test('keeps homonym entries separate and includes variations from each entry', () => {
+  const markdown = renderKBBI({
+    query: 'kamus',
+    entries: [
+      { word: 'kamus¹', headword: 'ka·mus¹', grammar: 'n', definitions: [{ number: 1, text: 'buku acuan' }], sublemmas: [{ headword: '-- besar', grammar: '', definitions: [{ number: null, text: 'variasi pertama' }] }], derivedEntries: [] },
+      { word: 'kamus²', headword: 'ka·mus²', grammar: 'Jw n', definitions: [{ number: null, text: 'kulit' }], sublemmas: [], derivedEntries: [{ headword: 'me·ngamus', grammar: 'v', definitions: [{ number: null, text: 'menyamaki kulit' }] }] },
+    ],
+    related: [],
+  });
+  assert.match(markdown, /ka·mus¹/);
+  assert.match(markdown, /ka·mus²/);
+  assert.match(markdown, /me·ngamus/);
 });
 
 test('help and stats avoid raw personal identifiers', () => {

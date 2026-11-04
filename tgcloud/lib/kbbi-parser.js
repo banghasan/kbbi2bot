@@ -7,6 +7,19 @@ import {
 import { decodeHtmlEntities, stripHtml } from './text.js';
 
 const TAG_TOKEN = /<!--[\s\S]*?-->|<[^>]*>|&(?:#x[0-9a-f]+|#\d+|[a-z]+);|[^<&]+/gi;
+const SUPERSCRIPT_DIGITS = Object.freeze({ '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' });
+
+function superscriptNumber(value) {
+  return String(value).replace(/[0-9]/g, (digit) => SUPERSCRIPT_DIGITS[digit]);
+}
+
+function normalizeIndexedWord(value, fallback = '') {
+  const source = String(value);
+  const index = source.match(/<sup\b[^>]*>\s*(\d+)\s*<\/sup>/i)?.[1];
+  const withoutIndex = source.replace(/<sup\b[^>]*>\s*\d+\s*<\/sup>/gi, '');
+  const word = stripHtml(withoutIndex) || fallback;
+  return index ? `${word}${superscriptNumber(index)}` : word;
+}
 
 function escapeRichText(value) {
   return String(value).replace(/([\\_*[\]()~`>#+\-=|{}.!])/g, '\\$1');
@@ -45,7 +58,7 @@ function firstTagContent(html, tagName) {
 }
 
 function parseDefinitionSegment(segment, fallbackWord) {
-  const headword = stripHtml(firstTagContent(segment, 'b')) || fallbackWord;
+  const headword = normalizeIndexedWord(firstTagContent(segment, 'b'), fallbackWord);
   const headTag = String(segment).match(/<b\b[^>]*>[\s\S]*?<\/b>/i);
   const afterHead = headTag ? String(segment).slice(headTag.index + headTag[0].length) : String(segment);
   const grammarMatch = afterHead.match(/^\s*(?:\/[^<]*\/\s*)?<(?:em|i)\b[^>]*>([\s\S]*?)<\/(?:em|i)>/i);
@@ -88,16 +101,16 @@ export function parseKBBIResponse(payload, query) {
 
   const entries = main.map((item) => {
     const segments = entrySegments(item.d);
-    const parsed = parseDefinitionSegment(segments[0] ?? item.d, stripHtml(item.w));
+    const parsed = parseDefinitionSegment(segments[0] ?? item.d, normalizeIndexedWord(item.w));
     const additional = segments
       .slice(1)
-      .map((segment) => parseDefinitionSegment(segment, stripHtml(item.w)))
+      .map((segment) => parseDefinitionSegment(segment, normalizeIndexedWord(item.w)))
       .filter((entry) => entry.definitions.length);
     const sublemmas = additional.filter((entry) => entry.headword.trim().startsWith('--')).slice(0, MAX_SUBLEMMAS);
     const derivedEntries = additional
       .filter((entry) => !entry.headword.trim().startsWith('--'))
       .slice(0, MAX_DERIVED_ENTRIES);
-    return { word: stripHtml(item.w), ...parsed, sublemmas, derivedEntries };
+    return { word: normalizeIndexedWord(item.w), ...parsed, sublemmas, derivedEntries };
   }).filter((entry) => entry.definitions.length);
 
   if (!entries.length) return null;
@@ -105,7 +118,7 @@ export function parseKBBIResponse(payload, query) {
   const mainWords = new Set(entries.map((entry) => entry.word.toLocaleLowerCase('id-ID')));
   const related = [];
   for (const item of usable) {
-    const word = stripHtml(item.w);
+    const word = normalizeIndexedWord(item.w);
     const key = word.toLocaleLowerCase('id-ID');
     if (!word || mainWords.has(key) || related.some((candidate) => candidate.toLocaleLowerCase('id-ID') === key)) continue;
     if (Number(item.x) === 5 || Number(item.x) === 9) related.push(word);

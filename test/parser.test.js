@@ -30,6 +30,15 @@ test('parses JSON payload into main definitions and related words', () => {
   assert.deepEqual(parsed.related, ['kumis kucing', 'lainnya']);
 });
 
+test('renders KBBI homonym indexes as superscript characters', () => {
+  const parsed = parseKBBIResponse([
+    { x: 1, w: 'kamus<sup>1</sup>', d: '<b>ka&#183;mus<sup>1</sup></b> <em>n</em> buku acuan' },
+    { x: 1, w: 'kamus<sup>2</sup>', d: '<b>ka&#183;mus<sup>2</sup></b> <em>Jw n</em> kulit' },
+  ], 'kamus');
+  assert.deepEqual(parsed.entries.map((entry) => entry.headword), ['ka·mus¹', 'ka·mus²']);
+  assert.deepEqual(parsed.entries.map((entry) => entry.word), ['kamus¹', 'kamus²']);
+});
+
 test('returns null for empty or unusable payloads', () => {
   assert.equal(parseKBBIResponse([], 'x'), null);
   assert.equal(parseKBBIResponse([{ x: 1, w: 'x', d: '' }], 'x'), null);

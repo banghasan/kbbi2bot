@@ -133,7 +133,7 @@ Prinsip tampilan:
 - Definisi utama selalu langsung terlihat.
 - Kata/frasa ditampilkan sebagai heading dengan emoji `📚`.
 - Kelas kata menggunakan italic.
-- Nomor definisi menggunakan bold.
+- Nomor definisi menggunakan format kurung, misalnya `(1)`, `(2)`, dan `(3)`.
 - Contoh, peribahasa, dan sublema dikelompokkan dalam expandable block quote agar tidak memenuhi layar.
 - Footer sumber dibuat ringkas.
 - Tombol sumber, support, dan source code diletakkan sebagai rich message button (`<tg-button>`), bukan `reply_markup` inline keyboard.

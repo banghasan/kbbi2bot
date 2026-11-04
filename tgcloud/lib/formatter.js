@@ -3,6 +3,8 @@ import {
   BOT_TAGLINE,
   BOT_USERNAME,
   MAX_DEFINITIONS,
+  MAX_DERIVED_ENTRIES,
+  MAX_SUBLEMMAS,
   CUSTOM_EMOJI_IDS,
   MAX_RICH_MESSAGE_LENGTH,
   SOURCE_CODE_URL,
@@ -42,43 +44,61 @@ export function sourceCodeButton() {
 
 export function renderKBBI(result) {
   const lines = [`# ${EMOJI.book} ${escapeMarkdown(result.query)}`, ''];
-  let definitionCount = 0;
-  for (const entry of result.entries) {
+  const selectedDefinitions = result.entries.map(() => []);
+  let definitionsRemaining = MAX_DEFINITIONS;
+  for (let index = 0; index < result.entries.length && definitionsRemaining > 0; index += 1) {
+    const definition = result.entries[index].definitions[0];
+    if (definition) {
+      selectedDefinitions[index].push(definition);
+      definitionsRemaining -= 1;
+    }
+  }
+  for (let index = 0; index < result.entries.length && definitionsRemaining > 0; index += 1) {
+    for (const definition of result.entries[index].definitions.slice(1)) {
+      if (!definitionsRemaining) break;
+      selectedDefinitions[index].push(definition);
+      definitionsRemaining -= 1;
+    }
+  }
+
+  for (const [index, entry] of result.entries.entries()) {
+    const definitions = selectedDefinitions[index];
+    if (!definitions.length) continue;
     const head = `**${escapeMarkdown(entry.headword || entry.word)}**`;
     const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
     lines.push(`${head}${grammar}`);
-    for (const definition of entry.definitions) {
-      if (definitionCount >= MAX_DEFINITIONS) break;
-      const prefix = definition.number == null ? '•' : `**${definition.number}**`;
+    for (const definition of definitions) {
+      const prefix = definition.number == null ? '•' : `(${definition.number})`;
       lines.push(`${prefix} ${definition.text}`);
-      definitionCount += 1;
     }
     lines.push('');
-    if (definitionCount >= MAX_DEFINITIONS) break;
   }
 
-  const firstEntry = result.entries[0];
-  const sublemmas = firstEntry?.sublemmas ?? [];
-  const derivedEntries = firstEntry?.derivedEntries ?? [];
-  if (sublemmas.length || derivedEntries.length || result.related.length) {
+  let sublemmasRemaining = MAX_SUBLEMMAS;
+  let derivedRemaining = MAX_DERIVED_ENTRIES;
+  const variationEntries = result.entries.map((entry) => {
+    const sublemmas = (entry.sublemmas ?? []).slice(0, Math.max(0, sublemmasRemaining));
+    const derivedEntries = (entry.derivedEntries ?? []).slice(0, Math.max(0, derivedRemaining));
+    sublemmasRemaining -= sublemmas.length;
+    derivedRemaining -= derivedEntries.length;
+    return { entry, sublemmas, derivedEntries };
+  });
+  if (variationEntries.some((item) => item.sublemmas.length || item.derivedEntries.length) || result.related.length) {
     lines.push(`<details><summary>${EMOJI.pin} Variasi</summary>`);
-    for (const entry of sublemmas) {
-      const head = `**${escapeMarkdown(entry.headword)}**`;
-      const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
-      lines.push(`${head}${grammar}`);
-      for (const definition of entry.definitions) {
-        const prefix = definition.number == null ? '•' : `**${definition.number}**`;
-        lines.push(`${prefix} ${definition.text}`);
+    const multipleEntries = result.entries.length > 1;
+    for (const item of variationEntries) {
+      if (!item.sublemmas.length && !item.derivedEntries.length) continue;
+      if (multipleEntries) lines.push(`**${escapeMarkdown(item.entry.headword || item.entry.word)}**`);
+      for (const entry of [...item.sublemmas, ...item.derivedEntries]) {
+        const head = `**${escapeMarkdown(entry.headword)}**`;
+        const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
+        lines.push(`${head}${grammar}`);
+        for (const definition of entry.definitions) {
+          const prefix = definition.number == null ? '•' : `(${definition.number})`;
+          lines.push(`${prefix} ${definition.text}`);
+        }
       }
-    }
-    for (const entry of derivedEntries) {
-      const head = `**${escapeMarkdown(entry.headword)}**`;
-      const grammar = entry.grammar ? ` _${escapeMarkdown(entry.grammar)}_` : '';
-      lines.push(`${head}${grammar}`);
-      for (const definition of entry.definitions) {
-        const prefix = definition.number == null ? '•' : `**${definition.number}**`;
-        lines.push(`${prefix} ${definition.text}`);
-      }
+      lines.push('');
     }
     if (result.related.length) {
       lines.push('', '**Hasil terkait:**');
@@ -105,7 +125,7 @@ export function renderStart() {
     'Gunakan mention bot langsung di chat atau grup:<br><br>',
     `${EMOJI.arrow} \`@KBBI2bot rumah sakit\``,
     '<br>',
-    `> ${EMOJI.info} Bot ini menggunakan KBBI Online dan bukan layanan resmi Badan Bahasa.`,
+    `> ${EMOJI.info} Bot ini menggunakan KBBI Online dan bukan layanan resmi dari kementrian pendidikan`,
   ].join('\n');
 }
 
