@@ -2,7 +2,7 @@
 
 Bot Telegram berbahasa Indonesia untuk mencari arti kata dan frasa dari [KBBI Online](https://kbbi.web.id/).
 
-> **Catatan:** Bot ini menggunakan KBBI Online dan bukan layanan resmi Badan Bahasa.
+> **Catatan:** Bot ini menggunakan KBBI Online dan bukan layanan resmi dari kementrian pendidikan.
 
 ## Tentang proyek
 
@@ -55,6 +55,10 @@ Batas pencarian adalah maksimal 3 kata dan 100 karakter. Mention bot tidak membe
 ### `/start`
 
 [![Tampilan perintah start](screenshot/kbbi_start.jpg)](screenshot/kbbi_start.jpg)
+
+### `/help`
+
+[![Tampilan bantuan bot](screenshot/kbbi_help.jpg)](screenshot/kbbi_help.jpg)
 
 ### Guest mode dan hasil pencarian
 
