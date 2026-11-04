@@ -1,6 +1,6 @@
 # Issue 008 — Cache dan Database
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan

@@ -121,6 +121,7 @@ Pemetaan markup minimum:
 - `<b>` atau `<strong>` → bold.
 - `<em>` atau `<i>` → italic.
 - `<code>` → inline mono.
+- `<sup>` dan `<sub>` → superscript/subscript bila tersedia.
 - `<br>` → baris baru.
 - Struktur contoh, peribahasa, dan keterangan tambahan → quote atau expandable quote.
 - Tag lain yang tidak diperlukan → dihapus atau dikonversi menjadi teks biasa.
@@ -135,7 +136,8 @@ Prinsip tampilan:
 - Nomor definisi menggunakan bold.
 - Contoh, peribahasa, dan sublema dikelompokkan dalam expandable block quote agar tidak memenuhi layar.
 - Footer sumber dibuat ringkas.
-- Tombol sumber diletakkan sebagai inline keyboard.
+- Tombol sumber, support, dan source code diletakkan sebagai rich message button (`<tg-button>`), bukan `reply_markup` inline keyboard.
+- Statistik menggunakan tabel Markdown dengan kolom metrik dan nilai.
 
 Contoh struktur visual:
 
@@ -158,7 +160,8 @@ Detail parser boleh menyesuaikan markup sumber selama struktur dan keterbacaan t
 ## Batas hasil
 
 - Maksimal 5 definisi utama untuk hasil utama.
-- Maksimal 10 sublema/kata turunan dalam bagian expandable.
+- Maksimal 10 sublema (`-- ...`) dan 5 kata turunan berdefinisi dalam bagian expandable.
+- Kata turunan yang tersedia pada segmen sumber, seperti `ayam-ayam` dan `ayam-ayaman`, ditampilkan bersama definisinya; hasil terkait `x:5`/`x:9` tetap berupa daftar ringkas.
 - Maksimal 100 karakter untuk input.
 - Maksimal 3 kata untuk input.
 - Terapkan batas karakter rich message Telegram sebelum pengiriman.

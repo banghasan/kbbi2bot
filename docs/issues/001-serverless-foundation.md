@@ -1,6 +1,6 @@
 # Issue 001 — Fondasi Telegram Serverless
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan

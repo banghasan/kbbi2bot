@@ -1,6 +1,6 @@
 # Issue 011 — Perintah `/help`
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan

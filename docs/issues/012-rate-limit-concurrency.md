@@ -1,6 +1,6 @@
 # Issue 012 — Rate Limit dan Concurrency Control
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: Hardening
 
 ## Tujuan

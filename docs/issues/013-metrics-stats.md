@@ -1,6 +1,6 @@
 # Issue 013 — Metrik dan Perintah `/stats`
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: Operations
 
 ## Tujuan
@@ -31,7 +31,7 @@ Command dapat digunakan siapa saja di private chat bot. `/stats` tidak diproses 
 
 ## Kriteria penerimaan
 
-- Admin dapat menjalankan `/stats` dan menerima ringkasan yang rapi.
+- Pengguna private chat dapat menjalankan `/stats` dan menerima ringkasan yang rapi.
 - Pengguna private chat mana pun dapat menjalankan `/stats`.
 - `/stats` pada group dan guest mode diabaikan atau ditolak dengan rich message yang aman.
 - Metrik tetap bertambah untuk jalur normal dan guest mode.

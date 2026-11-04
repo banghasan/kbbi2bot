@@ -1,6 +1,6 @@
 # Issue 010 — Testing dan Deployment
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan
@@ -41,3 +41,11 @@ Memastikan bot dapat diuji secara lokal melalui fixture dan dideploy secara aman
 - Deploy dapat diulang tanpa menghapus database.
 - Perubahan code dan migration dapat ditinjau terpisah.
 - README atau dokumentasi proyek menjelaskan setup developer baru.
+
+## Verifikasi deployment
+
+- Revision cloud terdeploy: `6`.
+- Webhook aktif dan sinkron dengan handler `message` serta `guest_message`.
+- Migration menerapkan 5 tabel dan pemeriksaan berikutnya menunjukkan database sinkron.
+- `tgcloud run handlers/message` berhasil memuat dan menjalankan handler.
+- `tgcloud run handlers/guest_message` berhasil memuat handler, melakukan fetch/parser KBBI, dan mencapai `answerGuestQuery`; fixture guest memakai query ID dummy sehingga Telegram menolak pengiriman akhirnya.

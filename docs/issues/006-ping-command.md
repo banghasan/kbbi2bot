@@ -1,6 +1,6 @@
 # Issue 006 — Perintah `/ping`
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan

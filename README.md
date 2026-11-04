@@ -14,4 +14,4 @@ Dokumentasi:
 - [Daftar issue](docs/issues/)
 - [Lisensi AGPLv3-or-later](LICENSE)
 
-Status: tahap desain dan dokumentasi. Implementasi bot belum dimulai.
+Status: implementasi MVP sudah dideploy ke Telegram Serverless; smoke test handler dan migration berhasil.

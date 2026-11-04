@@ -1,6 +1,6 @@
 # Issue 005 — Perintah `/kbbi`
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan
@@ -14,7 +14,7 @@ Menyediakan pencarian KBBI melalui command Telegram.
 3. Cek cache.
 4. Jika cache miss, fetch dan parse KBBI.
 5. Format hasil menjadi rich message.
-6. Kirim dengan inline button sumber.
+6. Kirim dengan rich message button sumber.
 
 ## Kriteria penerimaan
 

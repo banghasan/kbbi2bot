@@ -1,6 +1,6 @@
 # Issue 009 — Guest Mode
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: Guest Mode
 
 ## Tujuan

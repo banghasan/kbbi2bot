@@ -1,6 +1,6 @@
 # Issue 004 — Fetch dan Parser Data KBBI
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan
@@ -16,9 +16,11 @@ Mengambil dan mengubah respons endpoint KBBI menjadi data terstruktur yang dapat
 - Request HTTP dengan timeout.
 - Validasi content type dan status HTTP.
 - Parsing JSON endpoint `ajax_<random_text>` sebagai sumber data utama.
+- Item `x: 1` diprioritaskan sebagai hasil utama; item `x: 5` dan `x: 9` menjadi hasil terkait.
 - Decode dan sanitasi markup HTML yang berada di field definisi JSON menjadi data teks/markup yang aman.
 - Tidak menggunakan halaman HTML utama sebagai sumber data utama.
-- Pemilihan maksimal 5 definisi utama dan 10 sublema.
+- Pemilihan maksimal 5 definisi utama, 10 sublema, dan 5 kata turunan berdefinisi dari segmen tambahan field `d`.
+- Kata turunan tidak disamakan dengan hasil terkait `x:5`/`x:9`; definisinya tetap dipertahankan.
 
 ## Aturan URL
 

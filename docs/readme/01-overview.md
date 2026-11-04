@@ -12,3 +12,5 @@ Fitur utama:
 - Guest mode: `@KBBI2bot rumah sakit`.
 
 Bot menggunakan Telegram Serverless dan data JSON dari endpoint KBBI Online. Data definisi tidak dibundel sebagai database lokal.
+
+Lisensi kode: `AGPL-3.0-or-later`.

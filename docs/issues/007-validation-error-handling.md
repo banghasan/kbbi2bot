@@ -1,6 +1,6 @@
 # Issue 007 — Validasi dan Error Handling
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan

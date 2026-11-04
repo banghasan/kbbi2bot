@@ -1,6 +1,6 @@
 # Issue 003 — Perintah `/start`
 
-Status: Proposed
+Status: Implemented and verified
 Milestone: MVP
 
 ## Tujuan
@@ -13,10 +13,10 @@ Respons menggunakan rich message berbahasa Indonesia yang menjelaskan:
 
 - Nama bot: KBBI.
 - Fungsi: mencari arti kata atau frasa.
-- Contoh penggunaan `/kbbi kucing` dan `/kbbi rumah sakit`.
+- Contoh penggunaan ditampilkan dua baris dengan custom emoji panah: `/kbbi kucing` dan `/kbbi rumah sakit`.
 - Keterangan bahwa bot menggunakan KBBI Online dan bukan layanan resmi Badan Bahasa.
 
-Inline button:
+Rich message button:
 
 - `🤝 Support Telegram Bot Indonesia` → `https://t.me/botindonesia`
 
