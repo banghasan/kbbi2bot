@@ -27,6 +27,7 @@ Bot mengambil data definisi melalui endpoint JSON KBBI Online. Corpus KBBI tidak
 - `/stats` untuk melihat metrik agregat di private chat.
 - Rich message dengan custom emoji dan rich message button.
 - Cache, rate limit, concurrency limit, dan single-flight untuk query identik.
+- Error reporting ke grup/topic log khusus tanpa mengirim data pribadi pengguna.
 
 ## Contoh penggunaan
 
@@ -95,9 +96,11 @@ Perintah deployment:
 ```bash
 npx tgcloud login
 npx tgcloud status
-npx tgcloud push
+npm run deploy
 npx tgcloud migrate
 ```
+
+`npm run deploy` membaca konfigurasi lokal dari `.env`, membuat `runtime-config.js` yang di-ignore Git, lalu menjalankan `tgcloud push`. Gunakan `.env.example` sebagai template konfigurasi.
 
 Perubahan schema database hanya diterapkan melalui `tgcloud migrate`. Jangan menyimpan token atau secret di repository.
 

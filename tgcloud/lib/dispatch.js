@@ -4,6 +4,7 @@ import { lookupKBBI } from './kbbi-service.js';
 import { consumeRateLimit } from './limits.js';
 import { METRIC_KEYS } from './metrics.js';
 import { safeIncrement, userIdentity, validateSearch } from './handler-utils.js';
+import { reportError } from './error-reporter.js';
 
 export async function answerSearch({ message, argument, send }) {
   const validation = validateSearch(argument);
@@ -28,11 +29,14 @@ export async function answerSearch({ message, argument, send }) {
   let markdown;
   let replyMarkup;
   let status = 'ok';
+  let caughtError;
+  const startedAt = Date.now();
   try {
     const { result } = await lookupKBBI(validation.query);
     markdown = renderKBBI(result);
     replyMarkup = sourceButton(validation.query);
   } catch (error) {
+    caughtError = error;
     if (error instanceof KBBINotFoundError) {
       markdown = renderNotFound();
       status = 'not_found';
@@ -50,5 +54,8 @@ export async function answerSearch({ message, argument, send }) {
     }
   }
   await send(markdown, replyMarkup);
+  if (caughtError && status === 'source_error') {
+    await reportError({ type: 'KBBI source error', query: validation.query, error: caughtError, durationMs: Date.now() - startedAt });
+  }
   return { status, query: status === 'ok' || status === 'not_found' ? validation.query : undefined };
 }

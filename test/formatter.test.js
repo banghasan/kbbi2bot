@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { appendResponseTime, buttonForHelp, formatResponseTime, renderHelp, renderKBBI, renderNotFound, renderProcessing, renderStart, renderStats, responseTimeFooter, richMessage, sourceButton, sourceCodeButton } from '../tgcloud/lib/formatter.js';
+import { appendResponseTime, buttonForHelp, formatResponseTime, renderHelp, renderKBBI, renderNotFound, renderProcessing, renderSearchTimeout, renderStart, renderStats, responseTimeFooter, richMessage, sourceButton, sourceCodeButton } from '../tgcloud/lib/formatter.js';
 
 test('renders a readable KBBI rich message with details and source', () => {
   const markdown = renderKBBI({
@@ -189,6 +189,10 @@ test('renders adaptive response time with the requested custom clock emoji', () 
 
 test('uses the requested custom processing emoji', () => {
   assert.match(renderProcessing(), /tg:\/\/emoji\?id=6113844439292054570/);
+});
+
+test('renders a search timeout message', () => {
+  assert.match(renderSearchTimeout(), /membutuhkan waktu terlalu lama/);
 });
 
 test('uses the requested custom not-found emoji', () => {

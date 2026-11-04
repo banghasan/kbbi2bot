@@ -9,6 +9,9 @@ node_modules/
 .env.*
 !.env.example
 
+# Generated deployment configuration
+tgcloud/lib/runtime-config.js
+
 # Runtime output
 *.log
 logs/

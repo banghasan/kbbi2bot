@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.3] - 2026-11-04
+
+### Added
+
+- Error reporting ke chat atau topic Telegram yang dikonfigurasi melalui `.env`.
+- Perintah private `/logtest` untuk admin bot.
+- Generator `runtime-config.js` melalui `npm run deploy`.
+- Dokumentasi diagnosis spinner, pengiriman log, dan akses admin.
+
+### Changed
+
+- Menyesuaikan alur pencarian dengan runtime tgcloud yang tidak menyediakan `AbortSignal` dan `setTimeout`.
+- Mengirim respons pengguna sebelum menunggu laporan error.
+- Membuat chat dan thread log opsional: chat kosong menonaktifkan log, thread kosong mengirim tanpa topic.
+- Membatasi `/logtest` berdasarkan daftar Telegram user ID admin.
+
+### Fixed
+
+- Memulihkan pencarian yang tertahan pada pesan `Sedang memproses pencarian...` akibat ketidakcocokan API timeout runtime.
+- Memperluas pelaporan ke error sumber KBBI dan error alur pencarian.
+- Mengoreksi topic ID log Telegram dan memastikan promise pengiriman laporan ditunggu.
+
 ## [1.0.2] - 2026-11-04
 
 ### Changed

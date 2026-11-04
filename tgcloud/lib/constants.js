@@ -18,6 +18,7 @@ export const RATE_LIMIT_MAX = 10;
 export const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 export const MAX_FETCH_CONCURRENCY = 3;
 export const FETCH_TIMEOUT_MS = 8_000;
+export const SEARCH_TIMEOUT_MS = 20_000;
 export const FETCH_LEASE_MS = 15_000;
 export const MAX_LATENCY_SAMPLES = 1_000;
 

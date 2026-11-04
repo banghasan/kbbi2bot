@@ -221,6 +221,10 @@ export function renderSourceUnavailable() {
   return '⚠️ **Layanan KBBI sedang tidak dapat diakses.**\n\nSilakan coba lagi beberapa saat.';
 }
 
+export function renderSearchTimeout() {
+  return '⌛ **Pencarian membutuhkan waktu terlalu lama.**\n\nSilakan coba lagi beberapa saat.';
+}
+
 export function renderRateLimited(retryAfterSeconds = 60) {
   return `⏳ **Batas pencarian tercapai.**\n\nCoba lagi dalam sekitar ${Math.max(1, retryAfterSeconds)} detik.`;
 }

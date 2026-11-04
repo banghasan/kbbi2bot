@@ -1,4 +1,5 @@
 import { answerSearch } from '../lib/dispatch.js';
+import { reportError } from '../lib/error-reporter.js';
 import { renderInvalidInput } from '../lib/formatter.js';
 import { safeIncrement, safeRecordLatency, nowMs, parseGuestInput, validateSearch } from '../lib/handler-utils.js';
 import { METRIC_KEYS } from '../lib/metrics.js';
@@ -20,6 +21,7 @@ export default async function guestMessageHandler(message) {
       message,
       argument,
       answerSearch,
+      report: reportError,
       sendInitial: send,
       sendFallback: send,
       edit: (sent, markdown, replyMarkup, footer) => editGuestRich(sent, markdown, replyMarkup, footer),

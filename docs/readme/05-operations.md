@@ -17,3 +17,9 @@ Rate limit awal:
 - latency rata-rata dan p95
 
 Tidak ditampilkan: query, user ID, username, chat ID, token, atau data pribadi.
+
+## Error reporting
+
+Error sumber KBBI dan error tak terduga dikirim ke grup/topic log yang dikonfigurasi melalui `.env`. Laporan berisi jenis error, query pencarian, durasi, serta nama dan pesan error yang sudah dibatasi panjangnya.
+
+Error `tidak ditemukan`, rate limit, dan hasil normal tidak dikirim ke grup log. Kegagalan mengirim laporan hanya dicatat melalui `console.error` dan tidak mengganggu respons bot.

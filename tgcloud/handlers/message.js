@@ -5,6 +5,9 @@ import { safeIncrement, safeRecordLatency, isPrivate, nowMs, parseNormalInput } 
 import { METRIC_KEYS } from '../lib/metrics.js';
 import { answerSearchWithProgress } from '../lib/search-flow.js';
 import { editRichToChat, sendRichToChat } from '../lib/telegram.js';
+import { reportError } from '../lib/error-reporter.js';
+import { ADMIN_IDS } from '../lib/runtime-config.js';
+import { isAdmin } from '../lib/admin.js';
 
 export default async function messageHandler(message) {
   const startedAt = nowMs();
@@ -19,6 +22,7 @@ export default async function messageHandler(message) {
         message,
         argument: parsed.argument,
         answerSearch,
+        report: reportError,
         sendInitial: send,
         sendFallback: send,
         edit: (sent, markdown, replyMarkup, footer) => editRichToChat(message, sent, markdown, replyMarkup, footer),
@@ -36,6 +40,26 @@ export default async function messageHandler(message) {
       case 'ping':
         await send(renderPing(nowMs() - startedAt));
         break;
+      case 'logtest': {
+        if (!isAdmin(message, ADMIN_IDS)) {
+          await send('🔒 **Perintah ini hanya tersedia untuk admin bot.**');
+          break;
+        }
+        if (!isPrivate(message)) {
+          await send(renderPrivateOnly());
+          break;
+        }
+        const sent = await reportError({
+          type: 'Manual log test',
+          query: 'logtest',
+          error: new Error('Pengujian error reporting'),
+          durationMs: nowMs() - startedAt,
+        });
+        await send(sent
+          ? '✅ **Log test berhasil dikirim.**'
+          : '❌ **Log test gagal dikirim.**\n\nPeriksa chat ID, thread ID, dan izin bot di grup log.');
+        break;
+      }
       case 'stats':
         if (!isPrivate(message)) {
           await send(renderPrivateOnly());
@@ -56,6 +80,7 @@ export default async function messageHandler(message) {
           message,
           argument: parsed.argument,
           answerSearch,
+          report: reportError,
           sendInitial: send,
           sendFallback: send,
           edit: (sent, markdown, replyMarkup, footer) => editRichToChat(message, sent, markdown, replyMarkup, footer),

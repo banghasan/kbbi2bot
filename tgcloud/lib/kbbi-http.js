@@ -19,9 +19,8 @@ export class KBBINotFoundError extends Error {
 }
 
 async function requestJson(url, fetchImpl, timeoutMs) {
-  const signal = typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
-    ? AbortSignal.timeout(timeoutMs)
-    : undefined;
+  const signal = typeof globalThis.AbortSignal?.timeout === 'function'
+    ? globalThis.AbortSignal.timeout(timeoutMs) : undefined;
   const response = await fetchImpl(url, {
     headers: {
       Accept: 'application/json',

@@ -1,6 +1,6 @@
 {
   "name": "kbbi2bot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "license": "AGPL-3.0-or-later",
   "description": "Bot Telegram kamus Bahasa Indonesia berbasis KBBI Online",
@@ -9,7 +9,7 @@
     "@tgcloud/cli": "^0.2.0"
   },
   "scripts": {
-    "deploy": "tgcloud push",
+    "deploy": "node scripts/deploy.js",
     "status": "tgcloud status",
     "run": "tgcloud run",
     "test": "node --test",
