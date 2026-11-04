@@ -2,7 +2,8 @@ import { answerSearch } from '../lib/dispatch.js';
 import { renderInvalidInput } from '../lib/formatter.js';
 import { safeIncrement, safeRecordLatency, nowMs, parseGuestInput, validateSearch } from '../lib/handler-utils.js';
 import { METRIC_KEYS } from '../lib/metrics.js';
-import { answerGuestRich } from '../lib/telegram.js';
+import { answerSearchWithProgress } from '../lib/search-flow.js';
+import { answerGuestRich, editGuestRich } from '../lib/telegram.js';
 
 export default async function guestMessageHandler(message) {
   const startedAt = nowMs();
@@ -15,7 +16,14 @@ export default async function guestMessageHandler(message) {
       await send(renderInvalidInput());
       return;
     }
-    await answerSearch({ message, argument, send });
+    await answerSearchWithProgress({
+      message,
+      argument,
+      answerSearch,
+      sendInitial: send,
+      sendFallback: send,
+      edit: (sent, markdown, replyMarkup) => editGuestRich(sent, markdown, replyMarkup),
+    });
   } finally {
     await safeRecordLatency(startedAt);
   }

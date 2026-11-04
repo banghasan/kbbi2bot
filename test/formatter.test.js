@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { renderHelp, renderKBBI, renderStart, renderStats, richMessage, sourceButton, sourceCodeButton } from '../tgcloud/lib/formatter.js';
+import { appendResponseTime, formatResponseTime, renderHelp, renderKBBI, renderProcessing, renderStart, renderStats, richMessage, sourceButton, sourceCodeButton } from '../tgcloud/lib/formatter.js';
 
 test('renders a readable KBBI rich message with details and source', () => {
   const markdown = renderKBBI({
@@ -47,6 +47,18 @@ test('renders rich message buttons instead of inline keyboard markup', () => {
   assert.match(payload.markdown, /emoji-id="5289941455605876181"/);
   assert.match(payload.markdown, /https:\/\/kbbi\.web\.id\/rumah%20sakit/);
   assert.doesNotMatch(payload.markdown, /inline_keyboard/);
+});
+
+test('renders adaptive response time with the requested custom clock emoji', () => {
+  assert.equal(formatResponseTime(245), '245 ms');
+  assert.equal(formatResponseTime(1_250), '1.25 detik');
+  const markdown = appendResponseTime('Hasil', 245);
+  assert.match(markdown, /Waktu respons: \*\*245 ms\*\*/);
+  assert.match(markdown, /tg:\/\/emoji\?id=5857092222050111367/);
+});
+
+test('uses the requested custom processing emoji', () => {
+  assert.match(renderProcessing(), /tg:\/\/emoji\?id=6113844439292054570/);
 });
 
 test('truncates oversized rich output below the internal limit', () => {

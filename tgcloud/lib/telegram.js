@@ -16,6 +16,15 @@ export async function sendRichToChat(message, markdown, replyMarkup) {
   return api.sendRichMessage(payload);
 }
 
+export async function editRichToChat(message, sentMessage, markdown, replyMarkup) {
+  if (!sentMessage?.message_id) throw new Error('Missing sent message_id for edit');
+  return api.editMessageText({
+    chat_id: message.chat.id,
+    message_id: sentMessage.message_id,
+    rich_message: richMessage(markdown, replyMarkup),
+  });
+}
+
 function guestResultId(queryId) {
   const safe = String(queryId).replace(/[^a-zA-Z0-9_-]/g, '').slice(-56) || String(Date.now());
   return `kbbi-${safe}`.slice(0, 64);
@@ -32,5 +41,13 @@ export async function answerGuestRich(message, markdown, replyMarkup) {
       description: 'Hasil pencarian KBBI',
       input_message_content: { rich_message: richMessage(markdown, replyMarkup) },
     },
+  });
+}
+
+export async function editGuestRich(sentMessage, markdown, replyMarkup) {
+  if (!sentMessage?.inline_message_id) throw new Error('Missing guest inline_message_id for edit');
+  return api.editMessageText({
+    inline_message_id: sentMessage.inline_message_id,
+    rich_message: richMessage(markdown, replyMarkup),
   });
 }

@@ -3,7 +3,8 @@ import { answerSearch } from '../lib/dispatch.js';
 import { buttonForHelp, buttonForStart, renderHelp, renderPing, renderPrivateOnly, renderStart, renderStats, renderStatsUnavailable } from '../lib/formatter.js';
 import { safeIncrement, safeRecordLatency, isPrivate, nowMs, parseNormalInput } from '../lib/handler-utils.js';
 import { METRIC_KEYS } from '../lib/metrics.js';
-import { sendRichToChat } from '../lib/telegram.js';
+import { answerSearchWithProgress } from '../lib/search-flow.js';
+import { editRichToChat, sendRichToChat } from '../lib/telegram.js';
 
 export default async function messageHandler(message) {
   const startedAt = nowMs();
@@ -14,7 +15,14 @@ export default async function messageHandler(message) {
 
     const send = (markdown, replyMarkup) => sendRichToChat(message, markdown, replyMarkup);
     if (parsed.kind === 'guest-like') {
-      await answerSearch({ message, argument: parsed.argument, send });
+      await answerSearchWithProgress({
+        message,
+        argument: parsed.argument,
+        answerSearch,
+        sendInitial: send,
+        sendFallback: send,
+        edit: (sent, markdown, replyMarkup) => editRichToChat(message, sent, markdown, replyMarkup),
+      });
       return;
     }
 
@@ -44,7 +52,14 @@ export default async function messageHandler(message) {
         await send(renderStats(stats));
         break;
       case 'kbbi':
-        await answerSearch({ message, argument: parsed.argument, send });
+        await answerSearchWithProgress({
+          message,
+          argument: parsed.argument,
+          answerSearch,
+          sendInitial: send,
+          sendFallback: send,
+          edit: (sent, markdown, replyMarkup) => editRichToChat(message, sent, markdown, replyMarkup),
+        });
         break;
       default:
         break;

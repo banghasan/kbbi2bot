@@ -23,6 +23,8 @@ const EMOJI = {
   stats: customEmoji('📊', CUSTOM_EMOJI_IDS.stats),
   link: customEmoji('🔗', CUSTOM_EMOJI_IDS.link),
   pin: customEmoji('📌', CUSTOM_EMOJI_IDS.pin),
+  clock: customEmoji('⌚️', CUSTOM_EMOJI_IDS.clock),
+  processing: customEmoji('⏳', CUSTOM_EMOJI_IDS.processing),
 };
 
 export function sourceButton(query) {
@@ -148,6 +150,20 @@ export function renderRateLimited(retryAfterSeconds = 60) {
 
 export function renderConcurrencyBusy() {
   return '⏳ **Permintaan sedang padat.**\n\nSilakan coba lagi beberapa saat.';
+}
+
+export function renderProcessing() {
+  return `${EMOJI.processing} **Sedang memproses pencarian...**\n\nMohon tunggu sebentar.`;
+}
+
+export function formatResponseTime(durationMs) {
+  const duration = Math.max(0, Number(durationMs) || 0);
+  if (duration < 1000) return `${Math.round(duration)} ms`;
+  return `${(duration / 1000).toFixed(2).replace(/\.00$/, '')} detik`;
+}
+
+export function appendResponseTime(markdown, durationMs) {
+  return `${markdown}\n\n${EMOJI.clock} Waktu respons: **${formatResponseTime(durationMs)}**`;
 }
 
 export function renderPrivateOnly() {

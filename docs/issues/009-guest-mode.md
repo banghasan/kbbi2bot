@@ -28,6 +28,7 @@ Aturan:
 - Ambil `guest_query_id`.
 - Bangun hasil menggunakan formatter rich message yang sama dengan command normal.
 - Jawab melalui `answerGuestQuery` dengan `InputRichMessageContent`.
+- Kirim hasil sementara melalui `answerGuestQuery`, lalu edit hasil guest menggunakan `inline_message_id` dari respons menjadi hasil akhir.
 - Sertakan tombol `🔗 Buka <kata/frasa>`.
 
 ## Kriteria penerimaan
@@ -37,3 +38,4 @@ Aturan:
 - Hasil guest memiliki tampilan dan batas hasil yang sama dengan `/kbbi`.
 - Guest query dijawab menggunakan identifier query yang benar.
 - Tidak ada respons ganda dari handler `message` dan `guest_message`.
+- Status awal dan waktu respons akhir ditampilkan dengan alur edit pesan.

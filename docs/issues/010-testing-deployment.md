@@ -44,7 +44,7 @@ Memastikan bot dapat diuji secara lokal melalui fixture dan dideploy secara aman
 
 ## Verifikasi deployment
 
-- Revision cloud terdeploy: `6`.
+- Revision cloud terdeploy: `8`.
 - Webhook aktif dan sinkron dengan handler `message` serta `guest_message`.
 - Migration menerapkan 5 tabel dan pemeriksaan berikutnya menunjukkan database sinkron.
 - `tgcloud run handlers/message` berhasil memuat dan menjalankan handler.

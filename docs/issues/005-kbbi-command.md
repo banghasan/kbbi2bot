@@ -14,7 +14,9 @@ Menyediakan pencarian KBBI melalui command Telegram.
 3. Cek cache.
 4. Jika cache miss, fetch dan parse KBBI.
 5. Format hasil menjadi rich message.
-6. Kirim dengan rich message button sumber.
+6. Kirim pesan sementara `⏳ Sedang memproses pencarian...`.
+7. Edit pesan sementara menjadi hasil akhir dengan `editMessageText` dan rich message button sumber.
+8. Tambahkan waktu respons adaptif dalam milisecond atau detik di bagian paling bawah.
 
 ## Kriteria penerimaan
 
@@ -25,3 +27,5 @@ Menyediakan pencarian KBBI melalui command Telegram.
 - Hanya definisi utama yang langsung terlihat.
 - Contoh, peribahasa, dan sublema berada di expandable block quote.
 - Command tanpa input memakai pesan validasi rich message.
+- Pengguna menerima status awal sebelum fetch selesai.
+- Waktu respons mencakup proses pencarian dan ditampilkan pada hasil akhir.
