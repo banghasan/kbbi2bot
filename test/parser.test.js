@@ -51,3 +51,12 @@ test('splits numbered definitions embedded in one KBBI definition', () => {
   assert.deepEqual(parsed.entries[0].definitions.map((definition) => definition.number), [1, 2]);
   assert.match(parsed.entries[0].definitions[1].text, /sesuatu yang buruk/);
 });
+
+test('keeps the first definition when KBBI omits its number', () => {
+  const parsed = parseKBBIResponse([
+    { x: 1, w: 'makan<sup>1</sup>', d: '<b>ma&#183;kan<sup>1</sup></b> <em>v</em> memasukkan makanan pokok ke dalam mulut: <em>mereka -- tiga kali sehari</em>; <b>2</b> <em>v</em> memasukkan sesuatu ke dalam mulut' },
+  ], 'makan');
+  assert.equal(parsed.entries[0].grammar, 'v');
+  assert.deepEqual(parsed.entries[0].definitions.map((definition) => definition.number), [1, 2]);
+  assert.match(parsed.entries[0].definitions[0].text, /^memasukkan makanan pokok/);
+});

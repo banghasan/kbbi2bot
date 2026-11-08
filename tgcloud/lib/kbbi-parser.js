@@ -67,6 +67,13 @@ function parseDefinitionSegment(segment, fallbackWord) {
   const definitions = [];
 
   if (numbered.length) {
+    // Some KBBI entries omit the "1" marker, e.g. `<b>ma·kan</b> <em>v</em> memasukkan ... <b>2</b> ...`.
+    const firstNumber = Number(numbered[0][1]);
+    if (headTag && firstNumber > 1) {
+      const leadStart = headTag.index + headTag[0].length + (grammarMatch ? grammarMatch.index + grammarMatch[0].length : 0);
+      const lead = htmlToMarkdown(String(segment).slice(leadStart, numbered[0].index));
+      if (lead) definitions.push({ number: firstNumber - 1, text: lead });
+    }
     for (let i = 0; i < numbered.length && definitions.length < MAX_DEFINITIONS; i += 1) {
       const start = numbered[i].index + numbered[i][0].length;
       const end = numbered[i + 1]?.index ?? segment.length;
